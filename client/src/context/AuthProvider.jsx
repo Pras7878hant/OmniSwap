@@ -1,33 +1,48 @@
-import { useState } from "react";
-import AuthContext from "./AuthContext";
+import { createContext, useState } from "react";
+
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+
      const [user, setUser] = useState(() => {
           try {
                const storedUser = localStorage.getItem("user");
-               return storedUser && storedUser !== "undefined"
-                    ? JSON.parse(storedUser)
-                    : null;
-          } catch (err) {
-               console.error(`Invalid user data ${err}`);
+
+               if (!storedUser || storedUser === "undefined") return null;
+
+               const parsed = JSON.parse(storedUser);
+
+               if (!parsed?.token) return null;
+
+               return parsed;
+
+          } catch {
+               localStorage.removeItem("user");
                return null;
           }
      });
 
      const login = (data) => {
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user));
-          setUser(data.user);
+          localStorage.setItem("user", JSON.stringify(data));
+          setUser(data);
      };
 
      const logout = () => {
-          localStorage.clear();
+          localStorage.removeItem("user");
           setUser(null);
      };
 
+     const updateUser = (newUser) => {
+          if (!newUser) return;
+          localStorage.setItem("user", JSON.stringify(newUser));
+          setUser(newUser);
+     };
+
      return (
-          <AuthContext.Provider value={{ user, login, logout }}>
+          <AuthContext.Provider value={{ user, login, logout, updateUser }}>
                {children}
           </AuthContext.Provider>
      );
 };
+
+export default AuthContext;

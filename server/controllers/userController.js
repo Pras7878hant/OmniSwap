@@ -1,35 +1,66 @@
 import User from "../models/User.js";
 
+export const updateSkills = async (req, res) => {
+     try {
+          const normalize = (arr) =>
+               (arr || [])
+                    .map((s) => s.toLowerCase().trim())
+                    .filter((s) => s.length > 0);
+
+          const skillsHave = normalize(req.body.skillsHave);
+          const skillsWant = normalize(req.body.skillsWant);
+
+          const user = await User.findByIdAndUpdate(
+               req.user.id,
+               { skillsHave, skillsWant },
+               { new: true }
+          );
+
+          res.json(user);
+     } catch (err) {
+          res.status(500).json(err.message);
+     }
+};
+
 export const getMatches = async (req, res) => {
      try {
-          const normalize = (arr) => arr.map(s => s.toLowerCase());
+          const normalize = (arr) =>
+               (arr || []).map((s) => s.toLowerCase().trim());
+
+          const currentUser = await User.findById(req.user.id);
 
           const currentHave = normalize(currentUser.skillsHave);
           const currentWant = normalize(currentUser.skillsWant);
-
-          const currentUser = await User.findById(req.user.id);
 
           const users = await User.find({
                _id: { $ne: currentUser._id }
           });
 
-          const matches = users.map(user => {
-               const common = user.skillsHave.filter(skill =>
-                    currentUser.skillsWant.includes(skill)
-               );
+          const matches = users
+               .map((user) => {
+                    const userHave = normalize(user.skillsHave);
+                    const userWant = normalize(user.skillsWant);
 
-               const reverse = user.skillsWant.filter(skill =>
-                    currentUser.skillsHave.includes(skill)
-               );
+                    const iWant = userHave.filter((s) =>
+                         currentWant.includes(s)
+                    );
 
-               const score = common.length + reverse.length;
+                    const theyWant = userWant.filter((s) =>
+                         currentHave.includes(s)
+                    );
 
-               return {
-                    ...user._doc,
-                    score
-               };
-          })
-               .filter(u => u.score > 0)
+                    const score = iWant.length + theyWant.length;
+
+                    return {
+                         ...user._doc,
+                         score,
+                         debug: {
+                              iWant,
+                              theyWant
+                         }
+                    };
+               })
+               .filter((u) => u.score > 0)
                .sort((a, b) => b.score - a.score);
 
           res.json(matches);

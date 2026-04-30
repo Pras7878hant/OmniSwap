@@ -3,7 +3,7 @@ import API from "../services/api";
 import useAuth from "../hooks/useAuth";
 
 const Profile = () => {
-     const { user } = useAuth();
+     const { user, updateUser } = useAuth();  // ✅ FIXED
 
      const [skillsHave, setSkillsHave] = useState("");
      const [skillsWant, setSkillsWant] = useState("");
@@ -18,28 +18,39 @@ const Profile = () => {
 
      const handleUpload = async () => {
           try {
+               if (!image) return alert("Select image first");
+
                const formData = new FormData();
                formData.append("image", image);
 
                const res = await API.post("/user/upload", formData);
 
-               localStorage.setItem("user", JSON.stringify(res.data));
-               window.location.reload();
+               if (!res.data) return;
+
+               updateUser(res.data);
+               alert("Image uploaded");
+
           } catch (err) {
                console.error(err);
+               alert("Upload failed");
           }
      };
 
      const handleSave = async () => {
           try {
-               await API.put("/user/skills", {
+               const res = await API.put("/user/skills", {
                     skillsHave: formatSkills(skillsHave),
                     skillsWant: formatSkills(skillsWant)
                });
 
-               alert("Profile updated");
-          } catch (error) {
-               console.error(error);
+               if (!res.data) return;
+
+               updateUser(res.data);
+               alert("Skills updated");
+
+          } catch (err) {
+               console.error(err);
+               alert("Failed to save skills");
           }
      };
 
@@ -58,7 +69,6 @@ const Profile = () => {
                          <strong>Email:</strong> {user?.email}
                     </p>
 
-                    {/* Current Skills */}
                     <div className="mb-4">
                          <p className="text-sm font-semibold mb-1">Current Skills</p>
                          <p className="text-sm text-gray-500">
@@ -76,7 +86,10 @@ const Profile = () => {
                     <div className="flex flex-col items-center mb-6">
 
                          <img
-                              src={user?.profilePic || "https://ui-avatars.com/api/?name=User"}
+                              src={
+                                   user?.profilePic ||
+                                   `https://ui-avatars.com/api/?name=${user?.name}`
+                              }
                               className="w-24 h-24 rounded-full object-cover mb-4 border"
                          />
 
@@ -104,22 +117,21 @@ const Profile = () => {
 
                     </div>
 
-                    {/* Inputs */}
                     <input
                          placeholder="Skills you have e.g. js, react, node"
-                         className="w-full border p-3 mb-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                         className="w-full border p-3 mb-3 rounded-lg"
                          onChange={(e) => setSkillsHave(e.target.value)}
                     />
 
                     <input
                          placeholder="skills you want e.g. python, design"
-                         className="w-full border p-3 mb-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                         className="w-full border p-3 mb-4 rounded-lg"
                          onChange={(e) => setSkillsWant(e.target.value)}
                     />
 
                     <button
                          onClick={handleSave}
-                         className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition font-medium"
+                         className="w-full bg-indigo-600 text-white py-2 rounded-lg"
                     >
                          Save Changes
                     </button>

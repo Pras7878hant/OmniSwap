@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 
+
 const Matches = () => {
      const [matches, setMatches] = useState([]);
      const [loading, setLoading] = useState(true);
      const navigate = useNavigate();
+
+     // console.log("USER:", JSON.parse(localStorage.getItem("user")));
 
      useEffect(() => {
           const fetchMatches = async () => {

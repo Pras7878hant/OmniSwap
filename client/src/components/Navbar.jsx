@@ -26,14 +26,19 @@ const Navbar = () => {
                          Matches
                     </Link>
 
-                    <img
-                         src={user?.profilePic || `https://ui-avatars.com/api/?name=${user?.name}`}
-                         className="w-8 h-8 rounded-full"
-                    />
+                    <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
 
-                    <span className="text-gray-500 text-sm">
-                         {user?.name}
-                    </span>
+                         <img
+                              src={
+                                   user?.profilePic ||
+                                   `https://ui-avatars.com/api/?name=${user?.name}`
+                              }
+                              className="w-8 h-8 rounded-full"
+                         />
+
+                         <span className="text-sm">{user?.name}</span>
+
+                    </Link>
 
                     <button
                          onClick={() => {

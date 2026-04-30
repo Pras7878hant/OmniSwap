@@ -2,13 +2,17 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import API from "../services/api";
+import useAuth from "../hooks/useAuth";
 
 const Chat = () => {
      const { id } = useParams();
+     const { user } = useAuth();
+
      const [messages, setMessages] = useState([]);
      const [text, setText] = useState("");
      const socket = useRef(null);
 
+     // Fetch old messages
      useEffect(() => {
           const fetchMessages = async () => {
                try {
@@ -22,6 +26,7 @@ const Chat = () => {
           fetchMessages();
      }, [id]);
 
+     // Socket setup
      useEffect(() => {
           socket.current = io("http://localhost:5000");
 
@@ -35,19 +40,20 @@ const Chat = () => {
      const sendMessage = async () => {
           if (!text.trim()) return;
 
-          const newMessage = {
-               receiverId: id,
-               text
-          };
-
           try {
-               const res = await API.post("/messages", newMessage);
+               const res = await API.post("/messages", {
+                    receiverId: id,
+                    text
+               });
 
-               setMessages((prev) => [...prev, res.data]);
+               // ❌ REMOVE THIS LINE (important)
+               // setMessages((prev) => [...prev, res.data]);
 
+               // ✅ Only emit
                socket.current.emit("sendMessage", res.data);
 
                setText("");
+
           } catch (err) {
                console.error(err);
           }
@@ -55,20 +61,31 @@ const Chat = () => {
 
      return (
           <div className="min-h-screen bg-gray-100 flex flex-col p-4">
-               <div className="flex-1 overflow-y-auto space-y-3 mb-4 flex flex-col">
+
+               {/* Chat Messages */}
+               <div className="flex-1 overflow-y-auto flex flex-col gap-3 mb-4">
+
+                    {messages.length === 0 && (
+                         <p className="text-center text-gray-400">
+                              No messages yet
+                         </p>
+                    )}
+
                     {messages.map((msg) => (
                          <div
                               key={msg._id}
-                              className={`p-3 rounded-lg max-w-xs ${msg.sender === id
-                                        ? "bg-gray-300 self-start"
-                                        : "bg-indigo-600 text-white self-end"
+                              className={`p-3 rounded-lg max-w-xs ${msg.sender === user?._id
+                                   ? "bg-indigo-600 text-white self-end"
+                                   : "bg-gray-300 self-start"
                                    }`}
                          >
                               {msg.text}
                          </div>
                     ))}
+
                </div>
 
+               {/* Input */}
                <div className="flex gap-2">
                     <input
                          value={text}
@@ -84,6 +101,7 @@ const Chat = () => {
                          Send
                     </button>
                </div>
+
           </div>
      );
 };

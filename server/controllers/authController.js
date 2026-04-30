@@ -17,7 +17,8 @@ export const register = async (req, res) => {
 
           res.json(user);
      } catch (err) {
-          res.status(500).json(err.message);}
+          res.status(500).json(err.message);
+     }
 };
 
 // Login user
@@ -33,9 +34,21 @@ export const login = async (req, res) => {
 
           if (!isMatch) return res.status(400).json("Invalid credentials");
 
-          const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+          const token = jwt.sign(
+               { id: user._id },
+               process.env.JWT_SECRET
+          );
 
-          res.json({ token, user });
+          res.json({
+               token,
+               _id: user._id,
+               name: user.name,
+               email: user.email,
+               skillsHave: user.skillsHave,
+               skillsWant: user.skillsWant,
+               profilePic: user.profilePic
+          });
+
      } catch (err) {
           res.status(500).json(err.message);
      }
