@@ -7,7 +7,10 @@ const userSchema = new mongoose.Schema({
      skillsHave: [String],
      skillsWant: [String],
      rating: { type: Number, default: 0 },
-     profilePic: String
+     profilePic: {
+          type: String,
+          default: ""
+     },
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

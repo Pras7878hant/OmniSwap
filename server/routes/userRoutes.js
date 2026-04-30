@@ -1,0 +1,35 @@
+import express from "express";
+import { protect } from "../middleware/auth.js";
+import User from "../models/User.js";
+import multer from "multer";
+
+const router = express.Router();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+router.post("/upload", protect, upload.single("image"), async (req, res) => {
+     try {
+          if (!req.file) {
+               return res.status(400).json("No file uploaded");
+          }
+
+          const base64 = req.file.buffer.toString("base64");
+          const mime = req.file.mimetype;
+
+          const image = `data:${mime};base64,${base64}`;
+
+          const user = await User.findByIdAndUpdate(
+               req.user.id,
+               { profilePic: image },
+               { new: true }
+          );
+
+          res.json(user);
+     } catch (err) {
+          console.error(err);
+          res.status(500).json(err.message);
+     }
+});
+
+export default router;
