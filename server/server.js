@@ -8,15 +8,13 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
-import User from "./models/User.js";
-
 
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 
-//socket
+// socket setup
 const io = new Server(server, {
      cors: {
           origin: "http://localhost:5173",
@@ -24,27 +22,71 @@ const io = new Server(server, {
      }
 });
 
+// this will store which user is connected to which socket
+const users = {};
 
-//middleware
+
 app.use(cors());
 app.use(express.json());
+
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/notes", noteRoutes);
 
-//socket connection
 io.on("connection", (socket) => {
      console.log("User connected:", socket.id);
 
-     socket.on("sendMessage", (message) => {
-          socket.broadcast.emit("receiveMessage", message);
+     // user opens app, map userId with socketId
+     socket.on("join", (userId) => {
+          users[userId] = socket.id;
+
+          // updated online users list to everyone
+          io.emit("onlineUsers", Object.keys(users));
      });
 
+     // when someone sends message
+     socket.on("sendMessage", (message) => {
+          const receiverSocket = users[message.receiver];
+
+          // send message only to receiver
+          if (receiverSocket) {
+               io.to(receiverSocket).emit("receiveMessage", message);
+          }
+     });
+
+     // typing indicator
+     socket.on("typing", ({ sender, receiver }) => {
+          const receiverSocket = users[receiver];
+
+          if (receiverSocket) {
+               io.to(receiverSocket).emit("typing", sender);
+          }
+     });
+
+     // seen message
+     socket.on("seen", ({ sender, receiver }) => {
+          const senderSocket = users[receiver];
+
+          if (senderSocket) {
+               io.to(senderSocket).emit("seen", sender);
+          }
+     });
+
+     // when user disconnects
      socket.on("disconnect", () => {
+          for (let userId in users) {
+               if (users[userId] === socket.id) {
+                    delete users[userId];
+               }
+          }
+
+          io.emit("onlineUsers", Object.keys(users));
+
           console.log("User disconnected");
      });
 });
+
 
 mongoose.connect(process.env.MONGO_URI)
      .then(() => console.log("MongoDB Connected"))

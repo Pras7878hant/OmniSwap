@@ -7,12 +7,19 @@ export const updateSkills = async (req, res) => {
                     .map((s) => s.toLowerCase().trim())
                     .filter((s) => s.length > 0);
 
-          const skillsHave = normalize(req.body.skillsHave);
-          const skillsWant = normalize(req.body.skillsWant);
+          const updateData = {};
+
+          if (req.body.skillsHave !== undefined) {
+               updateData.skillsHave = normalize(req.body.skillsHave);
+          }
+
+          if (req.body.skillsWant !== undefined) {
+               updateData.skillsWant = normalize(req.body.skillsWant);
+          }
 
           const user = await User.findByIdAndUpdate(
                req.user.id,
-               { skillsHave, skillsWant },
+               updateData,
                { new: true }
           );
 
@@ -53,11 +60,7 @@ export const getMatches = async (req, res) => {
 
                     return {
                          ...user._doc,
-                         score,
-                         debug: {
-                              iWant,
-                              theyWant
-                         }
+                         score
                     };
                })
                .filter((u) => u.score > 0)

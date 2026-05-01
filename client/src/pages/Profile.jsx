@@ -38,18 +38,28 @@ const Profile = () => {
 
      const handleSave = async () => {
           try {
-               const res = await API.put("/user/skills", {
-                    skillsHave: formatSkills(skillsHave),
-                    skillsWant: formatSkills(skillsWant)
-               });
+               const data = {};
 
-               if (!res.data) return;
+               if (skillsHave.trim().length > 0) {
+                    data.skillsHave = formatSkills(skillsHave);
+               }
+
+               if (skillsWant.trim().length > 0) {
+                    data.skillsWant = formatSkills(skillsWant);
+               }
+
+               if (Object.keys(data).length === 0) {
+                    alert("Enter at least one field");
+                    return;
+               }
+
+               const res = await API.put("/user/skills", data);
 
                updateUser(res.data);
                alert("Skills updated");
 
           } catch (err) {
-               console.error(err);
+               console.log("ERROR:", err.response?.data || err.message);
                alert("Failed to save skills");
           }
      };

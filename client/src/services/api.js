@@ -17,10 +17,13 @@ API.interceptors.request.use((req) => {
 API.interceptors.response.use(
      (res) => res,
      (error) => {
-          if (error.response?.status === 401) {
+          const status = error.response?.status;
+
+          if (status === 401 && error.response?.data === "Invalid token") {
                localStorage.removeItem("user");
                window.location.href = "/login";
           }
+
           return Promise.reject(error);
      }
 );
