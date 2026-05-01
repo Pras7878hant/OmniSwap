@@ -7,6 +7,9 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import noteRoutes from "./routes/noteRoutes.js";
+import User from "./models/User.js";
+
 
 dotenv.config();
 
@@ -21,19 +24,21 @@ const io = new Server(server, {
      }
 });
 
+
 //middleware
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/notes", noteRoutes);
 
 //socket connection
 io.on("connection", (socket) => {
      console.log("User connected:", socket.id);
 
-     socket.on("sendMessage", (data) => {
-          io.emit("receiveMessage", data); // broadcast
+     socket.on("sendMessage", (message) => {
+          socket.broadcast.emit("receiveMessage", message);
      });
 
      socket.on("disconnect", () => {

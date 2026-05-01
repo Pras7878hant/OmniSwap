@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Matches from "./pages/Matches";
 import Profile from "./pages/Profile";
+import Notes from "./pages/Notes";
 
 import PrivateRoute from "./components/PrivateRoute";
 import Chat from "./pages/Chat";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/notes" element={<Notes />} />
 
 
         {/* Protected Route */}

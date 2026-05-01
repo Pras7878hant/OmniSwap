@@ -10,9 +10,9 @@ const Chat = () => {
 
      const [messages, setMessages] = useState([]);
      const [text, setText] = useState("");
+
      const socket = useRef(null);
 
-     // Fetch old messages
      useEffect(() => {
           const fetchMessages = async () => {
                try {
@@ -26,16 +26,35 @@ const Chat = () => {
           fetchMessages();
      }, [id]);
 
-     // Socket setup
      useEffect(() => {
           socket.current = io("http://localhost:5000");
 
           socket.current.on("receiveMessage", (data) => {
                setMessages((prev) => [...prev, data]);
+
+               const unread = JSON.parse(localStorage.getItem("unread") || "{}");
+
+
+               if (data.sender !== user?._id && window.location.pathname !== `/chat/${data.sender}`) {
+                    unread[data.sender] = (unread[data.sender] || 0) + 1;
+
+                    localStorage.setItem("unread", JSON.stringify(unread));
+
+                    window.dispatchEvent(new Event("unreadUpdated"));
+               }
           });
 
           return () => socket.current.disconnect();
-     }, []);
+     }, [user, id]);
+
+     useEffect(() => {
+          const unread = JSON.parse(localStorage.getItem("unread") || "{}");
+
+          delete unread[id];
+
+          localStorage.setItem("unread", JSON.stringify(unread));
+          window.dispatchEvent(new Event("unreadUpdated"));
+     }, [id]);
 
      const sendMessage = async () => {
           if (!text.trim()) return;
@@ -46,14 +65,9 @@ const Chat = () => {
                     text
                });
 
-               // ❌ REMOVE THIS LINE (important)
-               // setMessages((prev) => [...prev, res.data]);
-
-               // ✅ Only emit
+               setMessages((prev) => [...prev, res.data]);
                socket.current.emit("sendMessage", res.data);
-
                setText("");
-
           } catch (err) {
                console.error(err);
           }
@@ -62,7 +76,6 @@ const Chat = () => {
      return (
           <div className="min-h-screen bg-gray-100 flex flex-col p-4">
 
-               {/* Chat Messages */}
                <div className="flex-1 overflow-y-auto flex flex-col gap-3 mb-4">
 
                     {messages.length === 0 && (
@@ -85,7 +98,6 @@ const Chat = () => {
 
                </div>
 
-               {/* Input */}
                <div className="flex gap-2">
                     <input
                          value={text}

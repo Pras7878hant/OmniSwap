@@ -26,6 +26,8 @@ const Navbar = () => {
                          Matches
                     </Link>
 
+                    <Link to="/notes">Notes</Link>
+
                     <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
 
                          <img
