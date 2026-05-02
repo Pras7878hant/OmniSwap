@@ -10,7 +10,8 @@ import messageRoutes from "./routes/messageRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 
 dotenv.config();
-
+console.log("JWT:", process.env.JWT_SECRET);
+console.log("MONGO:", process.env.MONGO_URI);
 const app = express();
 const server = http.createServer(app);
 
