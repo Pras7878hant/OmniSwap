@@ -9,7 +9,8 @@ router.post("/", protect, async (req, res) => {
      try {
           const note = await Note.create({
                userId: req.user.id,
-               ...req.body
+               ...req.body,
+               skill: req.body.skill.toLowerCase().trim()
           });
 
           res.json(note);
@@ -25,15 +26,21 @@ router.get("/matched", protect, async (req, res) => {
           const skills = [
                ...(currentUser.skillsHave || []),
                ...(currentUser.skillsWant || [])
-          ];
+          ].map(s => s.toLowerCase().trim());
 
           const notes = await Note.find({
-               skill: { $in: skills }
+               $expr: {
+                    $in: [
+                         { $toLower: "$skill" },
+                         skills
+                    ]
+               }
           })
                .populate("userId", "name profilePic")
                .populate("comments.userId", "name");
 
           res.json(notes);
+
      } catch (err) {
           res.status(500).json(err.message);
      }
@@ -48,6 +55,10 @@ router.put("/:id", protect, async (req, res) => {
                return res.status(403).json("Unauthorized");
 
           Object.assign(note, req.body);
+          if (req.body.skill) {
+               note.skill = req.body.skill.toLowerCase().trim();
+          }
+
           await note.save();
 
           const updated = await Note.findById(note._id)
@@ -90,8 +101,12 @@ router.put("/:id/like", protect, async (req, res) => {
           }
 
           await note.save();
-          res.json(note);
 
+          const updated = await Note.findById(note._id)
+               .populate("userId", "name profilePic")
+               .populate("comments.userId", "name");
+
+          res.json(updated);
      } catch (err) {
           res.status(500).json(err.message);
      }
@@ -108,8 +123,11 @@ router.post("/:id/comment", protect, async (req, res) => {
 
           await note.save();
 
-          res.json(note);
+          const updated = await Note.findById(note._id)
+               .populate("userId", "name profilePic")
+               .populate("comments.userId", "name");
 
+          res.json(updated);
      } catch (err) {
           res.status(500).json(err.message);
      }

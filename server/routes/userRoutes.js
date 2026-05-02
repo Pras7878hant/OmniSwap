@@ -9,12 +9,20 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.put("/skills", protect, updateSkills);
+router.put("/skills", protect, (req, res, next) => {
+     console.log("HIT /skills ROUTE");
+     next();
+}, updateSkills);
 
-router.get("/matches", protect, getMatches);
+router.get("/matches", protect, (req, res, next) => {
+     console.log("HIT /matches ROUTE");
+     next();
+}, getMatches);
 
 router.post("/upload", protect, upload.single("image"), async (req, res) => {
      try {
+          console.log("HIT /upload ROUTE");
+
           const base64 = req.file.buffer.toString("base64");
           const mime = req.file.mimetype;
           const image = `data:${mime};base64,${base64}`;
@@ -25,8 +33,11 @@ router.post("/upload", protect, upload.single("image"), async (req, res) => {
                { new: true }
           );
 
+          console.log("UPDATED IMAGE USER:", user);
+
           res.json(user);
      } catch (err) {
+          console.log("UPLOAD ERROR:", err.message);
           res.status(500).json(err.message);
      }
 });
