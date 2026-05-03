@@ -10,22 +10,28 @@ import messageRoutes from "./routes/messageRoutes.js";
 import noteRoutes from "./routes/noteRoutes.js";
 
 dotenv.config();
-console.log("JWT:", process.env.JWT_SECRET);
-console.log("MONGO:", process.env.MONGO_URI);
+
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+     "http://localhost:5173",
+     "https://omni-swap-brown.vercel.app",
+     "https://omni-swap-git-main-pras7878hants-projects.vercel.app"
+];
+
 const io = new Server(server, {
      cors: {
-          origin: "http://localhost:5173",
-          methods: ["GET", "POST"]
+          origin: allowedOrigins,
+          methods: ["GET", "POST"],
+          credentials: true
      }
 });
 
 const users = {};
 
 app.use(cors({
-     origin: ["http://localhost:5173", "https://omni-swap-brown.vercel.app"],
+     origin: allowedOrigins,
      credentials: true
 }));
 
@@ -41,13 +47,11 @@ io.on("connection", (socket) => {
 
      socket.on("join", (userId) => {
           users[userId] = socket.id;
-
           io.emit("onlineUsers", Object.keys(users));
      });
 
      socket.on("sendMessage", (message) => {
           const receiverSocket = users[message.receiver];
-
           if (receiverSocket) {
                io.to(receiverSocket).emit("receiveMessage", message);
           }
@@ -55,7 +59,6 @@ io.on("connection", (socket) => {
 
      socket.on("typing", ({ sender, receiver }) => {
           const receiverSocket = users[receiver];
-
           if (receiverSocket) {
                io.to(receiverSocket).emit("typing", sender);
           }
@@ -63,7 +66,6 @@ io.on("connection", (socket) => {
 
      socket.on("seen", ({ sender, receiver }) => {
           const senderSocket = users[receiver];
-
           if (senderSocket) {
                io.to(senderSocket).emit("seen", sender);
           }
@@ -75,9 +77,7 @@ io.on("connection", (socket) => {
                     delete users[userId];
                }
           }
-
           io.emit("onlineUsers", Object.keys(users));
-
           console.log("User disconnected");
      });
 });
