@@ -1,6 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 const Signup = () => {
      const navigate = useNavigate();
@@ -15,7 +15,7 @@ const Signup = () => {
           e.preventDefault();
 
           try {
-               await axios.post("http://localhost:5000/api/auth/register", form);
+               await API.post("/auth/register", form);
                navigate("/login");
           } catch (error) {
                console.error(error);
@@ -38,25 +38,25 @@ const Signup = () => {
                     <input
                          type="text"
                          placeholder="Name"
-                         className="w-full mb-5 p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-300"
+                         className="w-full mb-5 p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500 outline-none"
                          onChange={(e) => setForm({ ...form, name: e.target.value })}
                     />
 
                     <input
                          type="email"
                          placeholder="Email"
-                         className="w-full mb-5 p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-300"
+                         className="w-full mb-5 p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500 outline-none"
                          onChange={(e) => setForm({ ...form, email: e.target.value })}
                     />
 
                     <input
                          type="password"
                          placeholder="Password"
-                         className="w-full mb-8 p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-300"
+                         className="w-full mb-8 p-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-slate-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500 outline-none"
                          onChange={(e) => setForm({ ...form, password: e.target.value })}
                     />
 
-                    <button className="w-full py-4 rounded-2xl bg-indigo-600 text-white font-bold text-lg shadow-[0_0_40px_-10px_rgba(79,70,229,0.6)] hover:bg-indigo-500 hover:shadow-[0_0_60px_-15px_rgba(79,70,229,0.8)] hover:-translate-y-1 transition-all duration-300 active:scale-95">
+                    <button className="w-full py-4 rounded-2xl bg-indigo-600 text-white font-bold text-lg hover:bg-indigo-500 transition-all">
                          Signup
                     </button>
                </form>

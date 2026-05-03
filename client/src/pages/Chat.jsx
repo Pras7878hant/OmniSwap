@@ -31,7 +31,11 @@ const Chat = () => {
      }, [id]);
 
      useEffect(() => {
-          socket.current = io("http://localhost:5000");
+          const BASE_URL =
+               import.meta.env.VITE_API_URL?.replace("/api", "") ||
+               "https://omniswap.onrender.com";
+
+          socket.current = io(BASE_URL);
 
           socket.current.emit("join", user._id);
 
