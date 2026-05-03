@@ -23,6 +23,7 @@ const Login = () => {
                     return;
                }
 
+               localStorage.setItem("user", JSON.stringify(res.data));
                login(res.data);
 
                navigate("/dashboard");
