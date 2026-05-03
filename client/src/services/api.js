@@ -17,7 +17,9 @@ API.interceptors.request.use(
                const raw = localStorage.getItem("user");
                const user = raw ? JSON.parse(raw) : null;
 
-               if (user && user.token) {
+               console.log("TOKEN IN REQUEST:", user?.token);
+
+               if (user?.token) {
                     req.headers.Authorization = `Bearer ${user.token}`;
                }
           } catch (err) {
@@ -44,10 +46,8 @@ API.interceptors.response.use(
                console.error("Network error / backend not reachable");
           }
 
-          if (status === 401) {
-               localStorage.removeItem("user");
-               window.location.href = "/login";
-          }
+          // ❌ REMOVE AUTO LOGOUT
+          // DO NOT delete token here
 
           return Promise.reject(error);
      }
