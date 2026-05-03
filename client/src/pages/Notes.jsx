@@ -130,7 +130,7 @@ const Notes = () => {
                                    </a>
                               )}
 
-                              <p className="whitespace-pre-wrap break-words font-mono text-sm mt-2 max-h-48 overflow-y-auto">
+                              <p className="whitespace-pre-wrap break-words font-mono text-sm mt-2 max-h-96 overflow-y-auto">
                                    {note.content}
                               </p>
 
