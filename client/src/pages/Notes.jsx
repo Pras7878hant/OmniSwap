@@ -120,7 +120,7 @@ const Notes = () => {
 
                               <h2 className="font-bold">{note.title}</h2>
 
-                              <p className="text-xs text-indigo-600 mb-1">
+                              <p className="text-xs text-indigo-600 break-words whitespace-pre-wrap mb-1">
                                    {note.skill} • {note.type}
                               </p>
 
@@ -167,7 +167,7 @@ const Notes = () => {
                                    />
                               </div>
 
-                              {/* OWNER ACTIONS */}
+                              {/* ACTIONS */}
                               {note.userId?._id === user?._id && (
                                    <div className="flex gap-2 mt-3">
                                         <button
