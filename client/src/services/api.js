@@ -10,37 +10,28 @@ API.interceptors.request.use(
      (req) => {
           try {
                const user = JSON.parse(localStorage.getItem("user"));
-
                if (user?.token) {
                     req.headers.Authorization = `Bearer ${user.token}`;
                }
           } catch (err) {
                console.log("Token parse error:", err);
           }
-
           return req;
      },
      (error) => Promise.reject(error)
 );
 
-// error handling
 API.interceptors.response.use(
-     (res) => res,
+     (res) => {
+          console.log("API RESPONSE:", res.data);
+          return res;
+     },
      (error) => {
-          const status = error.response?.status;
+          console.log("API ERROR:", error.response?.data);
 
-          // Unauthorized (token expired / invalid)
-          if (status === 401) {
+          if (error.response?.status === 401) {
                localStorage.removeItem("user");
                window.location.href = "/login";
-          }
-
-          if (status === 500) {
-               console.error("Server error:", error.response?.data);
-          }
-
-          if (!error.response) {
-               console.error("Network error / backend down");
           }
 
           return Promise.reject(error);
