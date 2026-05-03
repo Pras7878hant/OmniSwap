@@ -12,12 +12,17 @@ export const updateSkills = async (req, res) => {
 
           const updateData = {};
 
+          let skillsHave = [];
+          let skillsWant = [];
+
           if (req.body.skillsHave !== undefined) {
-               updateData.skillsHave = normalize(req.body.skillsHave);
+               skillsHave = normalize(req.body.skillsHave);
+               updateData.skillsHave = skillsHave;
           }
 
           if (req.body.skillsWant !== undefined) {
-               updateData.skillsWant = normalize(req.body.skillsWant);
+               skillsWant = normalize(req.body.skillsWant);
+               updateData.skillsWant = skillsWant;
           }
 
           console.log("NORMALIZED HAVE:", skillsHave);
