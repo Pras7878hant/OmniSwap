@@ -26,7 +26,7 @@ const Login = () => {
                localStorage.setItem("user", JSON.stringify(res.data));
                login(res.data);
 
-               navigate("/dashboard");
+               window.location.href = "/dashboard";
 
           } catch (error) {
                console.error(error);
