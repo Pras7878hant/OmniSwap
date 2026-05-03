@@ -23,7 +23,7 @@ export const protect = (req, res, next) => {
 
           next();
      } catch (error) {
-          console.log("❌ TOKEN ERROR:", error.message);
+          console.log("TOKEN ERROR:", error.message);
           res.status(401).json("Invalid token");
      }
 };
