@@ -15,7 +15,6 @@ console.log("MONGO:", process.env.MONGO_URI);
 const app = express();
 const server = http.createServer(app);
 
-// socket setup
 const io = new Server(server, {
      cors: {
           origin: "http://localhost:5173",
@@ -23,11 +22,13 @@ const io = new Server(server, {
      }
 });
 
-// this will store which user is connected to which socket
 const users = {};
 
+app.use(cors({
+     origin: ["http://localhost:5173", "https://omni-swap-brown.vercel.app"],
+     credentials: true
+}));
 
-app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
@@ -38,25 +39,20 @@ app.use("/api/notes", noteRoutes);
 io.on("connection", (socket) => {
      console.log("User connected:", socket.id);
 
-     // user opens app, map userId with socketId
      socket.on("join", (userId) => {
           users[userId] = socket.id;
 
-          // updated online users list to everyone
           io.emit("onlineUsers", Object.keys(users));
      });
 
-     // when someone sends message
      socket.on("sendMessage", (message) => {
           const receiverSocket = users[message.receiver];
 
-          // send message only to receiver
           if (receiverSocket) {
                io.to(receiverSocket).emit("receiveMessage", message);
           }
      });
 
-     // typing indicator
      socket.on("typing", ({ sender, receiver }) => {
           const receiverSocket = users[receiver];
 
@@ -65,7 +61,6 @@ io.on("connection", (socket) => {
           }
      });
 
-     // seen message
      socket.on("seen", ({ sender, receiver }) => {
           const senderSocket = users[receiver];
 
@@ -74,7 +69,6 @@ io.on("connection", (socket) => {
           }
      });
 
-     // when user disconnects
      socket.on("disconnect", () => {
           for (let userId in users) {
                if (users[userId] === socket.id) {
@@ -87,7 +81,6 @@ io.on("connection", (socket) => {
           console.log("User disconnected");
      });
 });
-
 
 mongoose.connect(process.env.MONGO_URI)
      .then(() => console.log("MongoDB Connected"))
