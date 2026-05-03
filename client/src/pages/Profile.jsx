@@ -27,7 +27,7 @@ const Profile = () => {
 
                if (!res.data) return;
 
-               updateUser(res.data);
+               updateUser({ ...user, ...res.data });
                alert("Image uploaded");
 
           } catch (err) {
@@ -55,7 +55,7 @@ const Profile = () => {
 
                const res = await API.put("/user/skills", data);
 
-               updateUser(res.data);
+               updateUser({ ...user, ...res.data });
                alert("Skills updated");
 
           } catch (err) {
