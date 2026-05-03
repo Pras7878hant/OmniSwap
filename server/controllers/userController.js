@@ -5,23 +5,39 @@ export const updateSkills = async (req, res) => {
           console.log("BODY:", req.body);
           console.log("USER FROM TOKEN:", req.user);
           console.log("NEW CONTROLLER RUNNING");
-          const normalize = (arr) =>
-               (arr || [])
-                    .map((s) => s.toLowerCase().trim())
-                    .filter((s) => s.length > 0);
+
+          // normalize function (handles string OR array)
+          const normalize = (input) => {
+               if (!input) return [];
+
+               // if frontend sends "react, node"
+               if (typeof input === "string") {
+                    return input
+                         .split(",")
+                         .map((s) => s.toLowerCase().trim())
+                         .filter((s) => s.length > 0);
+               }
+
+               // if frontend sends array ["react","node"]
+               if (Array.isArray(input)) {
+                    return input
+                         .map((s) => s.toLowerCase().trim())
+                         .filter((s) => s.length > 0);
+               }
+
+               return [];
+          };
 
           const updateData = {};
 
-          let skillsHave = [];
-          let skillsWant = [];
+          const skillsHave = normalize(req.body.skillsHave);
+          const skillsWant = normalize(req.body.skillsWant);
 
-          if (req.body.skillsHave !== undefined) {
-               skillsHave = normalize(req.body.skillsHave);
+          if (skillsHave.length) {
                updateData.skillsHave = skillsHave;
           }
 
-          if (req.body.skillsWant !== undefined) {
-               skillsWant = normalize(req.body.skillsWant);
+          if (skillsWant.length) {
                updateData.skillsWant = skillsWant;
           }
 
@@ -57,9 +73,15 @@ export const getMatches = async (req, res) => {
           console.log("USER ID:", req.user.id);
 
           const normalize = (arr) =>
-               (arr || []).map((s) => s.toLowerCase().trim());
+               (arr || [])
+                    .map((s) => s.toLowerCase().trim())
+                    .filter(Boolean);
 
           const currentUser = await User.findById(req.user.id);
+
+          if (!currentUser) {
+               return res.status(404).json("User not found");
+          }
 
           console.log("CURRENT USER:", currentUser);
 
