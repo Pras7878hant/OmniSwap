@@ -4,7 +4,7 @@ export const updateSkills = async (req, res) => {
      try {
           console.log("BODY:", req.body);
           console.log("USER FROM TOKEN:", req.user);
-
+          console.log("NEW CONTROLLER RUNNING");
           const normalize = (arr) =>
                (arr || [])
                     .map((s) => s.toLowerCase().trim())
