@@ -3,19 +3,11 @@ import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import OTP from '../models/Otp.js';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
+import emailjs from '@emailjs/nodejs';
 import dotenv from 'dotenv';
 dotenv.config();
 
 const router = express.Router();
-
-const transporter = nodemailer.createTransport({
-     service: 'gmail',
-     auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-     }
-});
 
 router.post('/request-otp', async (req, res) => {
      const { email, type } = req.body;
@@ -35,19 +27,18 @@ router.post('/request-otp', async (req, res) => {
           await OTP.deleteMany({ email });
           await new OTP({ email, otp: otpCode }).save();
 
-          await transporter.sendMail({
-               from: `"OmniSwap" <${process.env.EMAIL_USER}>`,
-               to: email,
-               subject: 'Your OmniSwap Verification Code',
-               html: `
-               <div style="font-family: Arial, sans-serif; padding: 20px; text-align: center;">
-                   <h2 style="color: #4f46e5;">OmniSwap Verification</h2>
-                   <p>Your 6-digit verification code is:</p>
-                   <h1 style="letter-spacing: 5px; color: #1e293b;">${otpCode}</h1>
-                   <p style="color: #64748b; font-size: 12px;">This code expires in 5 minutes.</p>
-               </div>
-               `
-          });
+          await emailjs.send(
+               process.env.EMAILJS_SERVICE_ID,
+               process.env.EMAILJS_TEMPLATE_ID,
+               {
+                    to_email: email,
+                    otp_code: otpCode,
+               },
+               {
+                    publicKey: process.env.EMAILJS_PUBLIC_KEY,
+                    privateKey: process.env.EMAILJS_PRIVATE_KEY,
+               }
+          );
 
           res.status(200).json({ success: true, message: "OTP Sent" });
 
