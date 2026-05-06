@@ -6,5 +6,6 @@ const BASE_URL =
 
 export const socket = io(BASE_URL, {
      withCredentials: true,
-     autoConnect: true
+     autoConnect: true,
+     transports: ['websocket', 'polling']
 });
