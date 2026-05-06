@@ -8,9 +8,13 @@ import Dashboard from "./pages/Dashboard";
 import Matches from "./pages/Matches";
 import Profile from "./pages/Profile";
 import Notes from "./pages/Notes";
+import ExamRoadmap from "./pages/ExamRoadmap";
 
 import PrivateRoute from "./components/PrivateRoute";
 import Chat from "./pages/Chat";
+
+import Whiteboard from "./pages/Whiteboard";
+import Roadmap from "./pages/Roadmap";
 
 function App() {
   return (
@@ -23,9 +27,11 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/notes" element={<Notes />} />
+        <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/exam-roadmap" element={<ExamRoadmap />} />
+        <Route path="/whiteboard/:roomId" element={<Whiteboard />} />
 
-
-        {/* Protected Route */}
+        {/* Protected Routes */}
         <Route
           path="/dashboard"
           element={
@@ -49,6 +55,15 @@ function App() {
           element={
             <PrivateRoute>
               <Profile />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/chat"
+          element={
+            <PrivateRoute>
+              <Chat />
             </PrivateRoute>
           }
         />

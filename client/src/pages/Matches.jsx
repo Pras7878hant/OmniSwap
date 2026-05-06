@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 
-
 const Matches = () => {
      const [matches, setMatches] = useState([]);
      const [loading, setLoading] = useState(true);
      const navigate = useNavigate();
-
-     // console.log("USER:", JSON.parse(localStorage.getItem("user")));
 
      useEffect(() => {
           const fetchMatches = async () => {
@@ -26,92 +23,114 @@ const Matches = () => {
      }, []);
 
      return (
-          <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
+          <div className="min-h-screen bg-[#0a0f1c] text-slate-200 p-6 md:p-12 relative overflow-hidden">
+               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-fuchsia-600/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-               <h1 className="text-3xl font-bold mb-8 text-center">
-                    Your Matches 🤝
-               </h1>
-
-               {loading && (
-                    <div className="flex justify-center items-center h-40">
-                         <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600"></div>
+               <div className="max-w-6xl mx-auto relative z-10">
+                    <div className="text-center mb-12">
+                         <h1 className="text-4xl md:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-indigo-400 mb-4">
+                              Your Matches 🤝
+                         </h1>
+                         <p className="text-slate-400 text-lg">
+                              Connect with peers to exchange skills and grow together.
+                         </p>
                     </div>
-               )}
 
-               {!loading && matches.length === 0 && (
-                    <div className="text-center text-gray-500 mt-20">
-                         <h2 className="text-xl font-semibold mb-2">
-                              No matches found 😢
-                         </h2>
-                         <p>Try adding more skills in your profile.</p>
-                    </div>
-               )}
+                    {loading && (
+                         <div className="flex justify-center items-center h-40">
+                              <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-fuchsia-500 border-r-transparent"></div>
+                         </div>
+                    )}
 
-               <div className="grid md:grid-cols-3 gap-6">
-                    {!loading &&
-                         matches.map((user) => (
+                    {!loading && matches.length === 0 && (
+                         <div className="text-center bg-white/5 border border-white/10 p-12 rounded-3xl max-w-2xl mx-auto backdrop-blur-sm">
+                              <div className="text-6xl mb-4">😢</div>
+                              <h2 className="text-2xl font-bold text-white mb-2">
+                                   No matches found yet
+                              </h2>
+                              <p className="text-slate-400 mb-6">
+                                   Try adding more specific technologies to your "Skills Have" and "Skills Want" lists.
+                              </p>
+                              <button
+                                   onClick={() => navigate("/profile")}
+                                   className="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 px-6 py-3 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition-all"
+                              >
+                                   Update Profile Skills
+                              </button>
+                         </div>
+                    )}
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                         {!loading && matches.map((user) => (
                               <div
                                    key={user._id}
-                                   className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-1 border border-gray-100"
+                                   className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 hover:border-fuchsia-500/30 transition-all group flex flex-col h-full backdrop-blur-sm"
                               >
-                                   <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-14 h-14 bg-indigo-500 text-white flex items-center justify-center rounded-full text-xl font-bold">
-                                             {user.name?.charAt(0).toUpperCase()}
+                                   <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/5">
+                                        {user.profilePic ? (
+                                             <img
+                                                  src={user.profilePic}
+                                                  alt={user.name}
+                                                  className="w-16 h-16 rounded-full object-cover border-2 border-indigo-500/50"
+                                             />
+                                        ) : (
+                                             <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center rounded-full text-2xl font-bold shadow-lg">
+                                                  {user.name?.charAt(0).toUpperCase()}
+                                             </div>
+                                        )}
+
+                                        <div>
+                                             <h2 className="text-xl font-bold text-white">
+                                                  {user.name}
+                                             </h2>
+                                             <div className="inline-flex items-center mt-1 bg-fuchsia-500/10 text-fuchsia-400 text-xs font-bold px-2.5 py-1 rounded-full border border-fuchsia-500/20">
+                                                  Score: {user.score || 0}% Match
+                                             </div>
+                                        </div>
+                                   </div>
+
+                                   <div className="flex-1 flex flex-col gap-4">
+                                        <div>
+                                             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">They Have</p>
+                                             <div className="flex flex-wrap gap-2">
+                                                  {user.skillsHave?.length ? (
+                                                       user.skillsHave.map((skill, i) => (
+                                                            <span key={i} className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 text-xs font-medium rounded-lg">
+                                                                 {skill}
+                                                            </span>
+                                                       ))
+                                                  ) : (
+                                                       <span className="text-slate-500 text-sm">No skills listed</span>
+                                                  )}
+                                             </div>
                                         </div>
 
                                         <div>
-                                             <h2 className="text-lg font-semibold">
-                                                  {user.name}
-                                             </h2>
-
-                                             <p className="text-xs text-indigo-600 font-semibold">
-                                                  Match Score: {user.score || 0}
-                                             </p>
-                                        </div>
-                                   </div>
-
-                                   <div className="mb-3">
-                                        <p className="text-xs text-gray-500 mb-1">Has</p>
-                                        <div className="flex flex-wrap gap-2">
-                                             {user.skillsHave?.length
-                                                  ? user.skillsHave.map((skill, i) => (
-                                                       <span
-                                                            key={i}
-                                                            className="bg-green-100 text-green-700 px-2 py-1 text-xs rounded"
-                                                       >
-                                                            {skill}
-                                                       </span>
-                                                  ))
-                                                  : <span className="text-gray-400 text-xs">No skills</span>}
-                                        </div>
-                                   </div>
-
-                                   <div className="mb-4">
-                                        <p className="text-xs text-gray-500 mb-1">Wants</p>
-                                        <div className="flex flex-wrap gap-2">
-                                             {user.skillsWant?.length
-                                                  ? user.skillsWant.map((skill, i) => (
-                                                       <span
-                                                            key={i}
-                                                            className="bg-blue-100 text-blue-700 px-2 py-1 text-xs rounded"
-                                                       >
-                                                            {skill}
-                                                       </span>
-                                                  ))
-                                                  : <span className="text-gray-400 text-xs">No skills</span>}
+                                             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">They Want</p>
+                                             <div className="flex flex-wrap gap-2">
+                                                  {user.skillsWant?.length ? (
+                                                       user.skillsWant.map((skill, i) => (
+                                                            <span key={i} className="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2.5 py-1 text-xs font-medium rounded-lg">
+                                                                 {skill}
+                                                            </span>
+                                                       ))
+                                                  ) : (
+                                                       <span className="text-slate-500 text-sm">No goals listed</span>
+                                                  )}
+                                             </div>
                                         </div>
                                    </div>
 
                                    <button
                                         onClick={() => navigate(`/chat/${user._id}`)}
-                                        className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition font-medium"
+                                        className="w-full mt-6 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl font-bold transition-all shadow-[0_0_15px_rgba(79,70,229,0.3)] active:scale-95"
                                    >
-                                        Connect & Chat
+                                        💬 Message {user.name.split(' ')[0]}
                                    </button>
                               </div>
                          ))}
+                    </div>
                </div>
-
           </div>
      );
 };

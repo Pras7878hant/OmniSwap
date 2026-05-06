@@ -4,10 +4,10 @@ export const protect = (req, res, next) => {
      try {
           let token = req.headers.authorization;
 
-          console.log("AUTH HEADER:", token);
+          // console.log("AUTH HEADER:", token);
 
           if (!token) {
-               console.log("❌ NO TOKEN");
+               // console.log("NO TOKEN");
                return res.status(401).json("No token");
           }
 
@@ -17,13 +17,13 @@ export const protect = (req, res, next) => {
 
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-          console.log("✅ DECODED TOKEN:", decoded);
+          // console.log("DECODED TOKEN:", decoded);
 
           req.user = decoded;
 
           next();
      } catch (error) {
-          console.log("TOKEN ERROR:", error.message);
+          // console.log("TOKEN ERROR:", error.message);
           res.status(401).json("Invalid token");
      }
 };

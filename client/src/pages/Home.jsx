@@ -5,53 +5,92 @@ const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
+  const features = [
+    { icon: "⚡", title: "Skill Exchange", desc: "Find the perfect partner to trade and learn new tech skills." },
+    { icon: "📚", title: "Share Notes", desc: "Upload, organize, and exchange premium study materials." },
+    { icon: "💬", title: "Live Chat", desc: "Connect instantly with peers using real-time messaging." },
+    { icon: "🖌️", title: "Whiteboard", desc: "Brainstorm and collaborate visually on a shared live canvas." },
+    { icon: "🗺️", title: "Career Roadmaps", desc: "Follow expert guides to crack TCS, Accenture, and product companies." },
+    { icon: "🚀", title: "100% Free", desc: "No subscriptions. No paywalls. Just pure knowledge exchange." }
+  ];
+
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4 overflow-hidden bg-slate-950">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/60 via-slate-950 to-black"></div>
+    <div className="min-h-screen bg-[#0a0f1c] text-slate-200 selection:bg-indigo-500/30 overflow-hidden relative">
 
-      <div className="absolute w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] -top-40 -left-20 animate-pulse"></div>
-      <div className="absolute w-[600px] h-[600px] bg-cyan-600/20 rounded-full blur-[120px] -bottom-40 -right-20 animate-pulse"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-[600px] h-[400px] bg-fuchsia-600/10 blur-[100px] rounded-full pointer-events-none"></div>
 
-      <div className="relative z-10 text-center max-w-2xl mx-auto">
-        <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-indigo-100 to-purple-300 drop-shadow-lg">
-          SkillSwap Hub 🚀
-        </h1>
+      <div className="max-w-7xl mx-auto px-6 pt-24 pb-16 relative z-10 flex flex-col items-center">
 
-        <p className="text-xl md:text-2xl text-slate-300 mb-12 font-light leading-relaxed">
-          Learn new skills by exchanging what you already know.
-          <br />
-          <span className="block mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-indigo-300 font-bold tracking-widest uppercase text-sm">
-            No money. Just skills.
-          </span>
-        </p>
+        {/* Hero Section */}
+        <div className="text-center max-w-3xl mx-auto mb-20 mt-10">
+          <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-sm font-semibold tracking-wide">
+            Welcome to the ultimate student network
+          </div>
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight text-white">
+            Master new skills by <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-fuchsia-400">sharing yours.</span>
+          </h1>
+          <p className="text-lg md:text-xl text-slate-400 mb-10 leading-relaxed">
+            Stop learning alone. Connect with developers, share resources, map out your career, and build projects together in real-time.
+          </p>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-          <button
-            onClick={() => {
-              if (user) {
-                navigate("/dashboard");
-              } else {
-                navigate("/signup");
-              }
-            }}
-            className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-indigo-600 text-white font-bold text-lg shadow-[0_0_40px_-10px_rgba(79,70,229,0.6)] hover:bg-indigo-500 hover:shadow-[0_0_60px_-15px_rgba(79,70,229,0.8)] hover:-translate-y-1 transition-all duration-300 active:scale-95"
-          >
-            Get Started
-          </button>
-
-          <button
-            onClick={() => {
-              if (user) {
-                navigate("/matches");
-              } else {
-                navigate("/login");
-              }
-            }}
-            className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-white/5 border border-white/10 text-white font-bold text-lg backdrop-blur-xl hover:bg-white/10 hover:border-white/30 hover:-translate-y-1 transition-all duration-300 active:scale-95"
-          >
-            Explore
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {user ? (
+              <>
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-base transition-all active:scale-95 shadow-[0_0_20px_rgba(79,70,229,0.3)]"
+                >
+                  Go to Dashboard
+                </button>
+                <button
+                  onClick={() => navigate("/matches")}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700 text-white font-bold text-base backdrop-blur-md transition-all active:scale-95"
+                >
+                  Explore Matches
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-base transition-all active:scale-95 shadow-[0_0_20px_rgba(79,70,229,0.3)]"
+                >
+                  Create Free Account
+                </button>
+                <button
+                  onClick={() => navigate("/login")}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700 text-white font-bold text-base backdrop-blur-md transition-all active:scale-95"
+                >
+                  Log In
+                </button>
+              </>
+            )}
+          </div>
         </div>
+
+        {/* Features*/}
+        <div className="w-full">
+          <h2 className="text-2xl font-bold text-center text-white mb-10">Everything you need to level up</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, idx) => (
+              <div
+                key={idx}
+                className="group p-6 rounded-2xl bg-slate-800/40 border border-slate-700/50 backdrop-blur-sm hover:bg-slate-800/80 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="text-4xl mb-4 grayscale-[0.5] group-hover:grayscale-0 transition-all duration-300">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold text-slate-100 mb-2">{feature.title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  {feature.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );

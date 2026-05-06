@@ -2,23 +2,17 @@ import User from "../models/User.js";
 
 export const updateSkills = async (req, res) => {
      try {
-          console.log("BODY:", req.body);
-          console.log("USER FROM TOKEN:", req.user);
-          console.log("NEW CONTROLLER RUNNING");
 
-          // normalize function (handles string OR array)
           const normalize = (input) => {
                if (!input) return [];
 
-               // if frontend sends "react, node"
                if (typeof input === "string") {
                     return input
                          .split(",")
                          .map((s) => s.toLowerCase().trim())
                          .filter((s) => s.length > 0);
                }
-
-               // if frontend sends array ["react","node"]
+               // if array
                if (Array.isArray(input)) {
                     return input
                          .map((s) => s.toLowerCase().trim())
@@ -41,11 +35,9 @@ export const updateSkills = async (req, res) => {
                updateData.skillsWant = skillsWant;
           }
 
-          console.log("NORMALIZED HAVE:", skillsHave);
-          console.log("NORMALIZED WANT:", skillsWant);
 
           if (!req.user?.id) {
-               console.log("NO USER ID");
+               // console.log("NO USER ID");
                return res.status(401).json("No user");
           }
 
@@ -55,7 +47,7 @@ export const updateSkills = async (req, res) => {
                { new: true }
           );
 
-          console.log("UPDATED USER:", user);
+          // console.log("UPDATED USER:", user);
 
           if (!user) {
                return res.status(404).json("User not found");
@@ -63,14 +55,14 @@ export const updateSkills = async (req, res) => {
 
           res.json(user);
      } catch (err) {
-          console.log("UPDATE ERROR:", err.message);
+          // console.log("UPDATE ERROR:", err.message);
           res.status(500).json(err.message);
      }
 };
 
 export const getMatches = async (req, res) => {
      try {
-          console.log("USER ID:", req.user.id);
+          // console.log("USER ID:", req.user.id);
 
           const normalize = (arr) =>
                (arr || [])
@@ -83,7 +75,7 @@ export const getMatches = async (req, res) => {
                return res.status(404).json("User not found");
           }
 
-          console.log("CURRENT USER:", currentUser);
+          // console.log("CURRENT USER:", currentUser);
 
           const currentHave = normalize(currentUser.skillsHave);
           const currentWant = normalize(currentUser.skillsWant);
@@ -115,11 +107,11 @@ export const getMatches = async (req, res) => {
                .filter((u) => u.score > 0)
                .sort((a, b) => b.score - a.score);
 
-          console.log("MATCHES:", matches);
+          // console.log("MATCHES:", matches);
 
           res.json(matches);
      } catch (err) {
-          console.log("MATCH ERROR:", err.message);
+          // console.log("MATCH ERROR:", err.message);
           res.status(500).json(err.message);
      }
 };
