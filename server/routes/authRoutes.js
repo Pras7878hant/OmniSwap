@@ -12,9 +12,6 @@ const router = express.Router();
 router.post('/request-otp', async (req, res) => {
      const { email, type } = req.body;
 
-     // CHECKPOINT 1: Did the request reach the server?
-     console.log("👉 1. Received OTP request for:", email);
-
      try {
           const existingUser = await User.findOne({ email });
 
@@ -30,9 +27,6 @@ router.post('/request-otp', async (req, res) => {
           await OTP.deleteMany({ email });
           await new OTP({ email, otp: otpCode }).save();
 
-          // CHECKPOINT 2: Is the database working?
-          console.log("👉 2. OTP saved to database. Attempting to send EmailJS...");
-
           await emailjs.send(
                process.env.EMAILJS_SERVICE_ID,
                process.env.EMAILJS_TEMPLATE_ID,
@@ -46,13 +40,9 @@ router.post('/request-otp', async (req, res) => {
                }
           );
 
-          // CHECKPOINT 3: Did EmailJS succeed?
-          console.log("👉 3. EmailJS sent successfully!");
           res.status(200).json({ success: true, message: "OTP Sent" });
 
      } catch (error) {
-          // CHECKPOINT 4: Did it crash?
-          console.log("❌ ERROR in request-otp route:", error);
           res.status(500).json({ message: "Failed to send OTP", error: error.message });
      }
 });
